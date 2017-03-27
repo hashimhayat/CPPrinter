@@ -19,6 +19,8 @@ package com.company; /**
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class CPPrinter {
 
@@ -69,6 +71,34 @@ public class CPPrinter {
     // The level of indent in the code so far
     private String indent_ = "";
 
+    // Previous indent level
+    private String lastIndent_ = "";
+
+    // Boolean to keep track if this is the first class that is being printed
+    // Used to maintain the indent
+    private Boolean shouldIndent = true;
+
+    /*
+        Method Class
+            MethodReturnType
+            MethodName
+            Parameter
+                ParameterType
+                ParameterName
+     */
+
+    class Method {
+        public String returnType;
+        public String methodName;
+        public HashMap<String, String> Parameters = new HashMap<String, String>();  // <Type, Name>
+
+        Method(String returnType, String methodName, HashMap<String, String> Parameters){
+            this.returnType = returnType;
+            this.methodName = methodName;
+            this.Parameters = Parameters;
+        }
+    }
+
     // Custom Constructor that Reads the AST file and stores it locally.
     public CPPrinter(String filePath){
 
@@ -99,8 +129,9 @@ public class CPPrinter {
     // Writes the C++ code to the local buffer
     private void writer(String text, int NewLines, Boolean indent, int section){
 
-        for (int i = 0; i < NewLines; ++i)
-            text += '\n';
+        for (int i = 0; i < NewLines; i++){
+            text += "\n";
+        }
 
         if (indent)
             indent();
@@ -141,7 +172,13 @@ public class CPPrinter {
 
     // Performs an indent
     private void indent(){
+        lastIndent_ = indent_;
         indent_ += "    ";
+    }
+
+    // Undo an Indent
+    private void undoIndent(){
+        indent_ = lastIndent_;
     }
 
     private void freshLine(int section){
@@ -162,9 +199,48 @@ public class CPPrinter {
 
     private void initClassDeclaration(String className){
         freshLine(2);
-        this.writer("struct __" + className,1,true,2);
-        this.writer("struct __" + className + "_VT",1,false,2);
-        this.writer("typedef __" + className + "* " + className ,1,false,2);
+        this.writer("struct __" + className + ";",1,shouldIndent,2);
+        this.writer("struct __" + className + "_VT;",1,false,2);
+        this.writer("typedef __" + className + "* " + className + ";" ,1,false,2);
+        shouldIndent = false;
+    }
+
+    /*
+        Generates a Class Declaration
+         - #struct __className;
+         - struct __className_VT;
+         - typedef __A* A;
+    */
+
+    private void resolve_ClassDeclaration(String className, ArrayList<Method> methods){
+        freshLine(3);
+        this.writer("struct __" + className + " {",2,false,3);
+        this.writer("__" + className + "_VT* __vptr;",2,true,3);
+        this.writer("__" + className + "();",2,false,3);
+
+        if (methods.size() > 0) {
+
+            for (Method method : methods){
+
+                String methodDec = "static " + method.returnType + " " + method.methodName + "(A";
+
+                for (String type : method.Parameters.keySet()) {
+                    methodDec += ", " + type + " " + method.Parameters.get(type);
+                }
+
+                methodDec += ");";
+
+                this.writer(methodDec,1,false,3);
+            }
+
+        }
+
+        freshLine(3);
+        this.writer("static Class __class();",2,false,3);
+        this.writer("static __A_VT __vtable;",2,false,3);
+
+        undoIndent();
+        this.writer("};",2,false,3);
     }
 
     /*
@@ -188,6 +264,25 @@ public class CPPrinter {
         this.resolve_namespace("inputs");
         this.resolve_namespace("javalang");
         this.initClassDeclaration("A");
+
+        HashMap<String, String> paramaters = new HashMap<>();
+        paramaters.put("int","text");
+        paramaters.put("Bool","isOk");
+
+        HashMap<String, String> paramater = new HashMap<>();
+        paramater.put("int","first");
+        paramater.put("Bool","second");
+
+        Method m = new Method("String", "toString",paramaters);
+        Method m2 = new Method("int", "hash",paramater);
+
+
+        ArrayList<Method> methods = new ArrayList<>();
+        methods.add(m);
+        methods.add(m2);
+
+        this.resolve_ClassDeclaration("A", methods);
+
     }
 
 
