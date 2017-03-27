@@ -31,7 +31,28 @@ public class CPPrinter {
     */
 
     // Local Buffer to hold AST data
-    private String[] AST;
+    private String AST;
+
+    /*
+        The C++ Code is divided into THREE sections
+        -----------------------------------------------
+
+        HEAD (CPP_HEAD) - Contains:
+        Header Files, Namespaces, etc
+
+        -----------------------------------------------
+
+        CLASS DECLARATION (CPP_CLASSES) - Contains:
+        All the Class Declarations
+
+        -----------------------------------------------
+
+        VTABLES (CPP_VTS) - Contains:
+        All the VTable Declarations
+
+        -----------------------------------------------
+        All of these sections together make the (CPP_CODE)
+     */
 
     // Local Buffer to hold the header/namespace etc information
     private StringBuilder CPP_HEAD = new StringBuilder();
@@ -72,7 +93,7 @@ public class CPPrinter {
             e.printStackTrace();
         }
 
-        AST = fileContent.replaceAll("\\s+", " ").trim().split(" ");
+        AST = fileContent;
     }
 
     // Writes the C++ code to the local buffer
