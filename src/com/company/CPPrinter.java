@@ -77,6 +77,10 @@ public class CPPrinter {
     // The level of indent in the code so far
     private String indent_ = "";
 
+    // Boolean to keep track if this is the first class that is being printed
+    // Used to maintain the indent
+    private Boolean shouldIndent = true;
+
     // Custom Constructor that Reads the AST file and stores it locally.
     public CPPrinter(String filePath){
 
@@ -170,9 +174,23 @@ public class CPPrinter {
 
     private void initClassDeclaration(String className){
         freshLine(2);
-        this.writer("struct __" + className,1,true,2);
-        this.writer("struct __" + className + "_VT",1,false,2);
-        this.writer("typedef __" + className + "* " + className ,1,false,2);
+        this.writer("struct __" + className + ";",1,shouldIndent,2);
+        this.writer("struct __" + className + "_VT;",1,false,2);
+        this.writer("typedef __" + className + "* " + className + ";" ,1,false,2);
+        shouldIndent = false;
+    }
+
+    /*
+        Generates a Class Declaration
+         - #struct __className;
+         - struct __className_VT;
+         - typedef __A* A;
+    */
+
+    private void resolve_ClassDeclaration(String className){
+        freshLine(3);
+        this.writer("struct __" + className + " {",1,false,3);
+        
     }
 
     /*
@@ -185,6 +203,7 @@ public class CPPrinter {
         this.resolve_namespace("inputs");
         this.resolve_namespace("javalang");
         this.initClassDeclaration("A");
+        this.resolve_ClassDeclaration("A");
     }
 
 
