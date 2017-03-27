@@ -42,11 +42,6 @@ public class CPPrinter {
 
         -----------------------------------------------
 
-        CLASS INIT (CLASS_INIT) - Contains:
-        All Class Initializations
-
-        -----------------------------------------------
-
         CLASS DECLARATION (CPP_CLASSES) - Contains:
         All the Class Declarations
 
@@ -61,9 +56,6 @@ public class CPPrinter {
 
     // Local Buffer to hold the header/namespace etc information
     private StringBuilder CPP_HEAD = new StringBuilder();
-
-    // Local Buffer to hold the class init information
-    private StringBuilder CPP_INIT = new StringBuilder();
 
     // Local Buffer to hold the class declarations
     private StringBuilder CPP_CLASSES = new StringBuilder();
@@ -114,7 +106,7 @@ public class CPPrinter {
             indent();
             text = indent_ + text;
 
-        // 1 -- HEAD. 2 -- CLASSES INIT. 3 -- CLASSES. 3 -- VTS
+        // 1 -- HEAD. 2 -- CLASSES. 3 -- VTS
 
         if (section == 1)
             CPP_HEAD.append(text);
@@ -128,7 +120,7 @@ public class CPPrinter {
     // Print Debug info on the console.
     public void printConsole(){
 
-        CPP_CODE.append(CPP_HEAD).append(CPP_INIT).append(CPP_CLASSES).append(CPP_VTS);
+        CPP_CODE.append(CPP_HEAD).append(CPP_CLASSES).append(CPP_VTS);
         System.out.println(CPP_CODE.toString());
     }
 
@@ -174,6 +166,17 @@ public class CPPrinter {
         this.writer("struct __" + className + "_VT",1,false,2);
         this.writer("typedef __" + className + "* " + className ,1,false,2);
     }
+
+    /*
+        struct __className_VT {
+            // all v tables have this variable
+            Class __is_a;
+
+            // declare all the types to be used
+            
+        }
+    */
+    private void initVTable() {}
 
     /*
         Method responsible for generating the C++ code from the AST data
