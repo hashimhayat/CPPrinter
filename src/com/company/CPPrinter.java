@@ -77,6 +77,9 @@ public class CPPrinter {
     // The level of indent in the code so far
     private String indent_ = "";
 
+    // Previous indent level
+    private String lastIndent_ = "";
+
     // Boolean to keep track if this is the first class that is being printed
     // Used to maintain the indent
     private Boolean shouldIndent = true;
@@ -111,8 +114,9 @@ public class CPPrinter {
     // Writes the C++ code to the local buffer
     private void writer(String text, int NewLines, Boolean indent, int section){
 
-        for (int i = 0; i < NewLines; ++i)
-            text += '\n';
+        for (int i = 0; i < NewLines; i++){
+            text += "\n";
+        }
 
         if (indent)
             indent();
@@ -153,7 +157,13 @@ public class CPPrinter {
 
     // Performs an indent
     private void indent(){
+        lastIndent_ = indent_;
         indent_ += "    ";
+    }
+
+    // Undo an Indent
+    private void undoIndent(){
+        indent_ = lastIndent_;
     }
 
     private void freshLine(int section){
@@ -189,8 +199,17 @@ public class CPPrinter {
 
     private void resolve_ClassDeclaration(String className){
         freshLine(3);
-        this.writer("struct __" + className + " {",1,false,3);
-        
+        this.writer("struct __" + className + " {",2,false,3);
+        this.writer("__" + className + "_VT* __vptr;",2,true,3);
+        this.writer("__" + className + "();",2,false,3);
+
+        this.writer("Methods go here",2,false,3);
+
+        this.writer("static Class __class();",2,false,3);
+        this.writer("static __A_VT __vtable;",2,false,3);
+
+        undoIndent();
+        this.writer("};",2,false,3);
     }
 
     /*
@@ -204,6 +223,7 @@ public class CPPrinter {
         this.resolve_namespace("javalang");
         this.initClassDeclaration("A");
         this.resolve_ClassDeclaration("A");
+
     }
 
 
