@@ -98,7 +98,8 @@ public class CPPrinter {
     class Method {
         public String returnType;
         public String methodName;
-        public HashMap<String, String> Parameters = new HashMap<String, String>();  // <Type, Name>
+        // <Type, Name>
+        public HashMap<String, String> Parameters = new HashMap<String, String>();
 
         Method(String returnType, String methodName, HashMap<String, String> Parameters){
             this.returnType = returnType;
