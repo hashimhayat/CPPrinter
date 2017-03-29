@@ -90,12 +90,30 @@ public class CPPrinter {
     class Method {
         public String returnType;
         public String methodName;
-        public HashMap<String, String> Parameters = new HashMap<String, String>();  // <Type, Name>
+        // <Type, Name>
+        public HashMap<String, String> Parameters = new HashMap<String, String>();
 
         Method(String returnType, String methodName, HashMap<String, String> Parameters){
             this.returnType = returnType;
             this.methodName = methodName;
             this.Parameters = Parameters;
+        }
+    }
+
+    /*
+        ClassVariableDeclaration
+            VariableType
+            VariableName
+            VariableValue
+     */
+
+    class Variable {
+        public String varType;
+        public String varName;
+
+        Variable(String type, String name){
+            this.varType = type;
+            this.varName = name;
         }
     }
 
@@ -187,7 +205,13 @@ public class CPPrinter {
 
     // Generates the namespaces
     private void resolve_namespace(String identifier){
-        this.writer("namespace " + identifier + " { "  ,1,true,1);
+
+        Boolean first = false;
+
+        for (String namespace : identifier.split("\\.")) {
+            this.writer("namespace " + namespace + " { ", 1, first, 1);
+            first = true;
+        }
     }
 
     /*
@@ -212,11 +236,20 @@ public class CPPrinter {
          - typedef __A* A;
     */
 
-    private void resolve_ClassDeclaration(String className, ArrayList<Method> methods){
-        freshLine(3);
+    private void resolve_ClassDeclaration(String className, ArrayList<Method> methods, ArrayList<Variable> variables){
+        freshLine(2);
         this.writer("struct __" + className + " {",2,false,3);
         this.writer("__" + className + "_VT* __vptr;",2,true,3);
         this.writer("__" + className + "();",2,false,3);
+
+        if (variables.size() > 0) {
+
+            for (Variable variable : variables){
+
+                String varDec = variable.varType + " " + variable.varName + ";";
+                this.writer(varDec,1,false,3);
+            }
+        }
 
         if (methods.size() > 0) {
 
@@ -232,10 +265,9 @@ public class CPPrinter {
 
                 this.writer(methodDec,1,false,3);
             }
-
         }
 
-        freshLine(3);
+        freshLine(2);
         this.writer("static Class __class();",2,false,3);
         this.writer("static __A_VT __vtable;",2,false,3);
 
@@ -278,9 +310,9 @@ public class CPPrinter {
     */
 
     public void cppGenerator(){
+
         this.cppInit();
-        this.resolve_namespace("inputs");
-        this.resolve_namespace("javalang");
+        this.resolve_namespace("inputs.test002");
         this.initClassDeclaration("A");
 
         HashMap<String, String> paramaters = new HashMap<>();
@@ -294,12 +326,16 @@ public class CPPrinter {
         Method m = new Method("String", "toString",paramaters);
         Method m2 = new Method("int", "hash",paramater);
 
+        Variable var = new Variable("int","count");
+        ArrayList<Variable> vars = new ArrayList<>();
+        vars.add(var);
+
 
         ArrayList<Method> methods = new ArrayList<>();
         methods.add(m);
         methods.add(m2);
 
-        this.resolve_ClassDeclaration("A", methods);
+        this.resolve_ClassDeclaration("A", methods,vars);
 
     }
 
