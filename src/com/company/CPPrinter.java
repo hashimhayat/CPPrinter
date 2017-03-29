@@ -285,8 +285,8 @@ public class CPPrinter {
         }
     */
     private void resolve_VTable(String className, ArrayList<Method> methods) {
-        this.writer("struct __" + className + "_VT {",1,false,3)
-        this.writer("Class __is_a;",2,true,3)
+        this.writer("struct __" + className + "_VT {",1,false,3);
+        this.writer("Class __is_a;",2,true,3);
 
         // for each method print the ff:
         // returnType (*methodName)(paramTypes);
@@ -309,9 +309,9 @@ public class CPPrinter {
         this.writer(": __is_a(__" + className + "::__class()),",1,false,3);
 
         if (methods.size() > 0) {
-            this.writer("",0,true,3);
+
             for (Method method : methods){
-                String methodDec = method.methodName + "((" + method.returnType + " (*)" + + "(A";
+                String methodDec = method.methodName + "((" + method.returnType + " (*)" + "(A";
 
                 for (String type : method.Parameters.keySet()) {
                     methodDec += ", " + type + " " + method.Parameters.get(type);
