@@ -205,7 +205,13 @@ public class CPPrinter {
 
     // Generates the namespaces
     private void resolve_namespace(String identifier){
-        this.writer("namespace " + identifier + " { "  ,1,true,1);
+
+        Boolean first = false;
+
+        for (String namespace : identifier.split("\\.")) {
+            this.writer("namespace " + namespace + " { ", 1, first, 1);
+            first = true;
+        }
     }
 
     /*
@@ -231,7 +237,7 @@ public class CPPrinter {
     */
 
     private void resolve_ClassDeclaration(String className, ArrayList<Method> methods, ArrayList<Variable> variables){
-        freshLine(3);
+        freshLine(2);
         this.writer("struct __" + className + " {",2,false,3);
         this.writer("__" + className + "_VT* __vptr;",2,true,3);
         this.writer("__" + className + "();",2,false,3);
@@ -288,8 +294,7 @@ public class CPPrinter {
     public void cppGenerator(){
 
         this.cppInit();
-        this.resolve_namespace("inputs");
-        this.resolve_namespace("javalang");
+        this.resolve_namespace("inputs.test002");
         this.initClassDeclaration("A");
 
         HashMap<String, String> paramaters = new HashMap<>();
