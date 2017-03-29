@@ -281,6 +281,13 @@ public class CPPrinter {
             Class __is_a;
 
             // declare all the types to be used
+            returnType (*methodName)(paramTypes);
+
+            // declare methods distinguishing between
+            // overridden and non-overridden methods
+
+            // use paramType ? className
+
             
         }
     */
@@ -292,7 +299,7 @@ public class CPPrinter {
         // returnType (*methodName)(paramTypes);
         if (methods.size() > 0) {
             for (Method method : methods){
-                String methodDec = method.returnType + " (*" + method.methodName + ")" + "(A";
+                String methodDec = method.returnType + " (*" + method.methodName + ")" + "(" + className;
 
                 for (String type : method.Parameters.keySet()) {
                     methodDec += ", " + type + " " + method.Parameters.get(type);
@@ -309,18 +316,21 @@ public class CPPrinter {
         this.writer(": __is_a(__" + className + "::__class()),",1,false,3);
 
         if (methods.size() > 0) {
+            for (Method method : methods) {
+                if (method.Parameters.get(0).ParameterType == Object) {
+                    String methodDec = method.methodName + "((" + method.returnType + " (*)" + "(" + className;
 
-            for (Method method : methods){
-                String methodDec = method.methodName + "((" + method.returnType + " (*)" + "(A";
+                    for (String type : method.Parameters.keySet()) {
+                        methodDec += ", " + type + " " + method.Parameters.get(type);
+                    }
 
-                for (String type : method.Parameters.keySet()) {
-                    methodDec += ", " + type + " " + method.Parameters.get(type);
+                    // TODO: figure out how to distinguish between 
+                    // overridden methods and non-overridden
+                    methodDec += ") &__" + className + "::" + method.methodName + "),";
+                    this.writer(methodDec,1,false,3);
+                } else {
+                    String methodDec = method.methodName + "(&__" + className + "::" + method.methodName + "),"
                 }
-
-                // TODO: figure out how to distinguish between 
-                // overridden methods and non-overridden
-                methodDec += ") &__" + className + "::" + method.methodName + "),";
-                this.writer(methodDec,1,false,3);
             }
             undoIndent();
             this.writer("{",1,false,3);
