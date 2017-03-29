@@ -318,7 +318,7 @@ public class CPPrinter {
 
         if (methods.size() > 0) {
             for (Method method : methods) {
-                if (method.Parameters.get(0).ParameterType == Object) {
+                if (method.Parameters.get(0).parameterType == Object) {
                     String methodDec = method.methodName + "((" + method.returnType + " (*)" + "(" + className;
 
                     for (String type : method.Parameters.keySet()) {
