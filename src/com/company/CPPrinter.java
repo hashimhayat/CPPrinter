@@ -1,5 +1,6 @@
 package com.company; /**
     Created by Hashim Hayat on 3/22/17.
+    Modified by Hashim Hayat and Jose Reyes.
 
     This class is responsible for the Phase 3 of the Translator
 
@@ -255,7 +256,7 @@ public class CPPrinter {
 
             for (Method method : methods){
 
-                String methodDec = "static " + method.returnType + " " + method.methodName + "(A";
+                String methodDec = "static " + method.returnType + " " + method.methodName + "(" + className;
 
                 for (String type : method.Parameters.keySet()) {
                     methodDec += ", " + type + " " + method.Parameters.get(type);
