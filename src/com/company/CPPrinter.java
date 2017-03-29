@@ -267,7 +267,7 @@ public class CPPrinter {
             }
         }
 
-        freshLine(3);
+        freshLine(2);
         this.writer("static Class __class();",2,false,3);
         this.writer("static __A_VT __vtable;",2,false,3);
 
