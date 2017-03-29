@@ -252,7 +252,25 @@ public class CPPrinter {
             
         }
     */
-    private void initVTable() {}
+    private void resolve_VTable(String className, HashMap<PrinterNodes> node) {
+        ArrayList<Method> methods = node.get("Methods");
+        this.writer("struct __" + className + "_VT {",2,false,3)
+        this.writer("Class __is_a;",2,true,3)
+        if (methods.size() > 0) {
+            for (Method method : methods){
+                String methodDec = method.getReturnType() + " (*" + method.getMethodName() + ")" + "(A";
+
+                for (String type : method.getParams()) {
+                    methodDec += ", " + type + " " + method.Parameters.get(type);
+                }
+
+                methodDec += ");";
+
+                this.writer(methodDec,1,false,3);
+            }
+        }
+
+    }
 
     /*
         Method responsible for generating the C++ code from the AST data
