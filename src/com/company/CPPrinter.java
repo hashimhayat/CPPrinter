@@ -100,6 +100,23 @@ public class CPPrinter {
         }
     }
 
+    /*
+        ClassVariableDeclaration
+            VariableType
+            VariableName
+            VariableValue
+     */
+
+    class Variable {
+        public String varType;
+        public String varName;
+
+        Variable(String type, String name){
+            this.varType = type;
+            this.varName = name;
+        }
+    }
+
     // Custom Constructor that Reads the AST file and stores it locally.
     public CPPrinter(String filePath){
 
@@ -213,11 +230,20 @@ public class CPPrinter {
          - typedef __A* A;
     */
 
-    private void resolve_ClassDeclaration(String className, ArrayList<Method> methods){
+    private void resolve_ClassDeclaration(String className, ArrayList<Method> methods, ArrayList<Variable> variables){
         freshLine(3);
         this.writer("struct __" + className + " {",2,false,3);
         this.writer("__" + className + "_VT* __vptr;",2,true,3);
         this.writer("__" + className + "();",2,false,3);
+
+        if (variables.size() > 0) {
+
+            for (Variable variable : variables){
+
+                String varDec = variable.varType + " " + variable.varName + ";";
+                this.writer(varDec,1,false,3);
+            }
+        }
 
         if (methods.size() > 0) {
 
@@ -233,7 +259,6 @@ public class CPPrinter {
 
                 this.writer(methodDec,1,false,3);
             }
-
         }
 
         freshLine(3);
@@ -261,6 +286,7 @@ public class CPPrinter {
     */
 
     public void cppGenerator(){
+
         this.cppInit();
         this.resolve_namespace("inputs");
         this.resolve_namespace("javalang");
@@ -277,12 +303,16 @@ public class CPPrinter {
         Method m = new Method("String", "toString",paramaters);
         Method m2 = new Method("int", "hash",paramater);
 
+        Variable var = new Variable("int","count");
+        ArrayList<Variable> vars = new ArrayList<>();
+        vars.add(var);
+
 
         ArrayList<Method> methods = new ArrayList<>();
         methods.add(m);
         methods.add(m2);
 
-        this.resolve_ClassDeclaration("A", methods);
+        this.resolve_ClassDeclaration("A", methods,vars);
 
     }
 
